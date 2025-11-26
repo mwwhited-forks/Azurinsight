@@ -4,6 +4,9 @@
     "publisher": "RahulThatikonda",
     "description": "An open source Azure Application Insights Emulator",
     "version": "1.0.0",
+    "author": "Rahul Thatikonda",
+    "license": "MIT",
+    "icon": "icon.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/Rahulkumar010/azurinsight.git"

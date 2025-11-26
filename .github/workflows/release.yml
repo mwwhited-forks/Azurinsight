@@ -47,5 +47,5 @@ jobs:
       with:
         pat: ${{ secrets.VSCE_PAT }}
         registryUrl: https://marketplace.visualstudio.com
-        extensionFile: packages/extension/*.vsix
+        extensionFile: azurinsight-*.vsix
         packagePath: packages/extension
