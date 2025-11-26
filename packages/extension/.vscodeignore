@@ -8,5 +8,7 @@ src/**
 tsconfig.json
 package-lock.json
 ../../test_server.js
+../../package.json
+../../package-lock.json
 !server/**
 !ui/**
