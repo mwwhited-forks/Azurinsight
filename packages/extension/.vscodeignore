@@ -10,5 +10,8 @@ package-lock.json
 ../../test_server.js
 ../../package.json
 ../../package-lock.json
+../../README.md
+../../CONTRIBUTING.md
+../../MARKETPLACE.md
 !server/**
 !ui/**
