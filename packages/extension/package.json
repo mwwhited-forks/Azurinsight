@@ -1,7 +1,7 @@
 {
     "name": "azurinsight",
     "displayName": "Azurinsight",
-    "publisher": "Rahul Thatikonda",
+    "publisher": "RahulThatikonda",
     "description": "An open source Azure Application Insights Emulator",
     "version": "1.0.0",
     "repository": {
