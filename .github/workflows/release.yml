@@ -72,10 +72,18 @@ jobs:
         vsce package --target ${{ matrix.target }}
         ls -la
 
+    - name: Get VSIX Path
+      id: get_vsix_path
+      shell: bash
+      run: |
+        VSIX_PATH=$(find packages/extension -name "azurinsight-${{ matrix.target }}*.vsix" -type f | head -n 1)
+        echo "Found VSIX at: $VSIX_PATH"
+        echo "vsix_path=$VSIX_PATH" >> $GITHUB_OUTPUT
+
     - name: Publish to VS Code Marketplace
       uses: HaaLeo/publish-vscode-extension@v1
       with:
         pat: ${{ secrets.VSCE_PAT }}
         registryUrl: https://marketplace.visualstudio.com
-        extensionFile: packages/extension/azurinsight-*.vsix
+        extensionFile: ${{ steps.get_vsix_path.outputs.vsix_path }}
         packagePath: packages/extension
