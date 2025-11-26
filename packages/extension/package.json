@@ -1,0 +1,76 @@
+{
+    "name": "azurinsight",
+    "displayName": "Azurinsight",
+    "publisher": "Rahul Thatikonda",
+    "description": "An open source Azure Application Insights Emulator",
+    "version": "1.0.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Rahulkumar010/azurinsight.git"
+    },
+    "engines": {
+        "vscode": "^1.80.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "tags": [
+        "Azure",
+        "Application Insights",
+        "Emulator",
+        "Azurinsight"
+    ],
+    "activationEvents": [
+        "onCommand:azurinsight.start",
+        "onCommand:azurinsight.stop",
+        "onCommand:azurinsight.openWebview"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "azurinsight.start",
+                "title": "Azurinsight: Start Emulator"
+            },
+            {
+                "command": "azurinsight.stop",
+                "title": "Azurinsight: Stop Emulator"
+            },
+            {
+                "command": "azurinsight.openWebview",
+                "title": "Azurinsight: Open Telemetry Viewer"
+            }
+        ],
+        "configuration": {
+            "title": "Azurinsight",
+            "properties": {
+                "azurinsight.port": {
+                    "type": "number",
+                    "default": 5000,
+                    "description": "Port for the Azurinsight emulator server."
+                },
+                "azurinsight.autoStart": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Automatically start the emulator on VS Code launch."
+                },
+                "azurinsight.dbPath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Custom path for the SQLite database (leave empty for default)."
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./"
+    },
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "@types/vscode": "^1.80.0",
+        "typescript": "^5.4.5",
+        "undici-types": "^7.16.0"
+    }
+}

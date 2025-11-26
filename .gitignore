@@ -1,0 +1,12 @@
+**/node_modules
+.nyc_output
+dist
+debug.log
+*.vsix
+*.tgz
+__*
+*.env
+temp
+**/.DS_Store.DS_Store
+*.pem
+.pkg-cache

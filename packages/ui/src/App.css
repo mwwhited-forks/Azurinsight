@@ -1,0 +1,128 @@
+#root {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: var(--vscode-editor-background);
+  border-bottom: 1px solid var(--vscode-panel-border);
+  gap: 10px;
+}
+
+.filter-input {
+  flex: 1;
+  padding: 4px 8px;
+  background-color: var(--vscode-input-background);
+  color: var(--vscode-input-foreground);
+  border: 1px solid var(--vscode-input-border);
+  outline: none;
+}
+
+.filter-input:focus {
+  border-color: var(--vscode-focusBorder);
+}
+
+button {
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border: none;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Telemetry List */
+.telemetry-list table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.telemetry-list th {
+  text-align: left;
+  padding: 4px 8px;
+  background-color: var(--vscode-editor-background);
+  position: sticky;
+  top: 0;
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.telemetry-list td {
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--vscode-panel-border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.telemetry-list tr:hover {
+  background-color: var(--vscode-list-hoverBackground);
+}
+
+.telemetry-list tr.selected {
+  background-color: var(--vscode-list-activeSelectionBackground);
+  color: var(--vscode-list-activeSelectionForeground);
+}
+
+/* Telemetry Details */
+.telemetry-details {
+  height: 300px;
+  border-top: 1px solid var(--vscode-panel-border);
+  background-color: var(--vscode-editor-background);
+  display: flex;
+  flex-direction: column;
+}
+
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background-color: var(--vscode-editor-background);
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.details-header h3 {
+  margin: 0;
+  font-size: 1.1em;
+}
+
+.telemetry-details pre {
+  margin: 0;
+  padding: 10px;
+  overflow: auto;
+  flex: 1;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.9em;
+}

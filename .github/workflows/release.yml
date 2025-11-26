@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Build All Packages
+      run: npm run build --workspaces
+
+    - name: Prepare Assets
+      # Manually copy and rename assets as done in local build
+      # This ensures the extension package has the correct UI files
+      run: |
+        mkdir -p packages/extension/ui/assets
+        cp -r packages/ui/dist/* packages/extension/ui/
+        cd packages/extension/ui/assets
+        mv index-*.js index.js
+        mv index-*.css index.css
+
+    - name: Publish to VS Code Marketplace
+      uses: HaaLeo/publish-vscode-extension@v1
+      with:
+        pat: ${{ secrets.VSCE_PAT }}
+        registryUrl: https://marketplace.visualstudio.com
+        extensionFile: packages/extension/azurinsight-*.vsix
+        packagePath: packages/extension

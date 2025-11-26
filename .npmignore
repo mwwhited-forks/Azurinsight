@@ -1,0 +1,16 @@
+node_modules/
+debug.log
+.lintstagedrc
+.vscode/
+.github/
+tslint.json
+tsconfig.json
+*.vsix
+.vscodeignore
+*.tgz
+__*__.json
+__*__
+*.env
+.gitattributes
+.dockerignore
+icon.png
