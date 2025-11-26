@@ -26,6 +26,9 @@ jobs:
     - name: Install Dependencies
       run: npm ci
 
+    - name: Install Linux Rollup Binding
+      run: npm install @rollup/rollup-linux-x64-gnu --no-save
+
     - name: Build All Packages
       run: npm run build --workspaces
 
