@@ -1,6 +1,6 @@
 {
   "name": "appinsights-ite-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Azure Application Insights Emulator Server",
   "main": "dist/index.js",
   "scripts": {
