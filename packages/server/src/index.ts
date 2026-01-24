@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import path from 'path';
 import { initDB } from './db';
 import { ingestionRouter, setBroadcastCallback } from './routes/ingestion';
 import { queryRouter } from './routes/query';
@@ -26,9 +27,26 @@ initDB();
 app.use('/', ingestionRouter);
 app.use('/api', queryRouter);
 
-app.get('/', (req, res) => {
-    res.send('AppInsights-ite Emulator Running');
-});
+// Serve static UI files (only in standalone mode, not when used as VS Code extension)
+const SERVE_UI = process.env.SERVE_UI !== 'false';
+if (SERVE_UI) {
+    const uiPath = path.join(__dirname, '../../ui/dist');
+    app.use(express.static(uiPath));
+
+    // Serve UI for all non-API routes (SPA fallback)
+    app.get('*', (req, res, next) => {
+        // Skip API routes and track endpoints
+        if (req.path.startsWith('/api') || req.path.startsWith('/v2')) {
+            return next();
+        }
+        res.sendFile(path.join(uiPath, 'index.html'));
+    });
+} else {
+    // Simple root endpoint when UI serving is disabled
+    app.get('/', (req, res) => {
+        res.send('AppInsights-ite Emulator Running');
+    });
+}
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
@@ -50,4 +68,7 @@ setBroadcastCallback((item: any) => {
 
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    if (SERVE_UI) {
+        console.log(`Web UI: http://localhost:${PORT}/`);
+    }
 });
