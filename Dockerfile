@@ -1,22 +1,28 @@
-# Multi-stage build for Azurinsight Server
+# Multi-stage build for Azurinsight Server + UI
 # Stage 1: Build
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json* ./
-COPY packages/server/package.json ./packages/server/
+# Copy package files for server
+COPY packages/server/package.json packages/server/package-lock.json ./packages/server/
 
-# Install dependencies
-RUN npm ci --workspaces=false && \
-    cd packages/server && npm ci
+# Install server dependencies (including devDependencies for TypeScript compilation)
+RUN cd packages/server && npm install
+
+# Copy package files for UI
+COPY packages/ui/package.json packages/ui/package-lock.json ./packages/ui/
+
+# Install UI dependencies
+RUN cd packages/ui && npm install
 
 # Copy source code
 COPY packages/server ./packages/server
+COPY packages/ui ./packages/ui
 
-# Build the server
-RUN cd packages/server && npm run build
+# Build the server and UI
+RUN cd packages/server && npm run build && \
+    cd ../ui && npm run build
 
 # Stage 2: Production
 FROM node:20-alpine
@@ -24,14 +30,13 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Install production dependencies only
-COPY package.json package-lock.json* ./
-COPY packages/server/package.json ./packages/server/
+COPY packages/server/package.json packages/server/package-lock.json ./packages/server/
 
-RUN npm ci --workspaces=false --only=production && \
-    cd packages/server && npm ci --only=production
+RUN cd packages/server && npm install --omit=dev
 
 # Copy built files from builder
 COPY --from=builder /app/packages/server/dist ./packages/server/dist
+COPY --from=builder /app/packages/ui/dist ./packages/ui/dist
 
 # Create directory for SQLite database
 RUN mkdir -p /data

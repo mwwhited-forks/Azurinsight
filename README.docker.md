@@ -136,10 +136,17 @@ services:
 ## Accessing the Service
 
 Once running, the server will be available at:
+- **Web UI**: `http://localhost:5000/` - Live telemetry viewer with React interface
 - Telemetry ingestion: `http://localhost:5000/v2.1/track`
-- Query API: `http://localhost:5000/api/telemetry`
+- Query API: `http://localhost:5000/api/query`
 - WebSocket: `ws://localhost:5000`
-- Health check: `http://localhost:5000/`
+
+The Web UI provides:
+- Real-time telemetry streaming via WebSocket
+- Search and filter capabilities
+- Detailed telemetry inspection
+- Bulk delete and purge operations
+- Date range filtering
 
 ## Data Persistence
 

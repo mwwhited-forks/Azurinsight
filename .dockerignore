@@ -2,7 +2,6 @@
 node_modules
 npm-debug.log
 yarn-error.log
-package-lock.json
 
 # Build outputs
 dist
@@ -48,6 +47,5 @@ logs
 # CI/CD
 .github/workflows
 
-# Extension and UI packages (not needed for server-only build)
+# Extension package (not needed for server build)
 packages/extension
-packages/ui
