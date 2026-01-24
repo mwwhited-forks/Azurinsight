@@ -1,7 +1,13 @@
 {
   "name": "ui",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "author": "Rahul Thatikonda",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rahulkumar010/azurinsight.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",

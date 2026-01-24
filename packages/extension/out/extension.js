@@ -5,12 +5,17 @@ exports.deactivate = deactivate;
 const vscode = require("vscode");
 const path = require("path");
 const cp = require("child_process");
+const fs = require("fs");
+const crypto = require("crypto");
 let serverProcess = null;
 let statusBarItem;
 let outputChannel;
 function activate(context) {
     console.log('Azurinsight extension is now active!');
     vscode.window.showInformationMessage('Azurinsight: Activating...');
+    // Check autoStart setting
+    const config = vscode.workspace.getConfiguration('azurinsight');
+    const autoStart = config.get('autoStart');
     outputChannel = vscode.window.createOutputChannel('Azurinsight');
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
     context.subscriptions.push(statusBarItem);
@@ -35,6 +40,9 @@ function activate(context) {
     context.subscriptions.push(stopCommand);
     context.subscriptions.push(openWebviewCommand);
     updateStatusBar();
+    if (autoStart) {
+        startServer(context);
+    }
 }
 function startServer(context) {
     if (serverProcess) {
@@ -44,10 +52,28 @@ function startServer(context) {
     // In packaged extension, server is inside the extension folder
     const serverPath = path.join(context.extensionPath, 'server');
     const scriptPath = path.join(serverPath, 'dist', 'index.js');
+    // Check for bundled Node.js binary
+    const platform = process.platform;
+    const nodeExecutable = platform === 'win32' ? 'node.exe' : 'node';
+    const bundledNodePath = path.join(serverPath, 'bin', nodeExecutable);
+    let command = 'node';
+    if (fs.existsSync(bundledNodePath)) {
+        command = bundledNodePath;
+        outputChannel.appendLine(`Using bundled Node.js: ${command}`);
+    }
+    else {
+        outputChannel.appendLine('Using system Node.js');
+    }
     outputChannel.appendLine(`Starting server from: ${scriptPath}`);
-    serverProcess = cp.spawn('node', [scriptPath], {
+    const config = vscode.workspace.getConfiguration('azurinsight');
+    const port = config.get('port') || 5000;
+    serverProcess = cp.spawn(command, [scriptPath], {
         cwd: serverPath,
-        env: { ...process.env, PORT: '5000' } // Default port
+        env: { ...process.env, PORT: port.toString() }
+    });
+    serverProcess.on('error', (err) => {
+        outputChannel.appendLine(`[Server Spawn Error]: ${err.message}`);
+        vscode.window.showErrorMessage(`Failed to start server: ${err.message}`);
     });
     serverProcess.stdout?.on('data', (data) => {
         outputChannel.append(`[Server]: ${data}`);
@@ -158,14 +184,19 @@ class AzurinsightPanel {
         outputChannel.appendLine(`Style URI: ${styleUri}`);
         // Use a nonce to whitelist which scripts can be run
         const nonce = getNonce();
+        const config = vscode.workspace.getConfiguration('azurinsight');
+        const port = config.get('port') || 5000;
         return `<!DOCTYPE html>
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} https:; font-src ${webview.cspSource}; script-src 'nonce-${nonce}'; connect-src ws://localhost:5000 http://localhost:5000;">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} https:; font-src ${webview.cspSource}; script-src 'nonce-${nonce}'; connect-src ws://localhost:${port} http://localhost:${port};">
                 <title>Azurinsight</title>
                 <link href="${styleUri}" rel="stylesheet">
+                <script nonce="${nonce}">
+                    window.azurinsightPort = ${port};
+                </script>
             </head>
             <body>
                 <div id="root"></div>
@@ -188,12 +219,7 @@ class AzurinsightPanel {
     }
 }
 function getNonce() {
-    let text = '';
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 32; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
+    return crypto.randomBytes(16).toString('hex');
 }
 function deactivate() {
     stopServer();

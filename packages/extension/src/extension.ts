@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as cp from 'child_process';
 import * as fs from 'fs';
+import * as crypto from 'crypto';
 
 let serverProcess: cp.ChildProcess | null = null;
 let statusBarItem: vscode.StatusBarItem;
@@ -10,6 +11,10 @@ let outputChannel: vscode.OutputChannel;
 export function activate(context: vscode.ExtensionContext) {
     console.log('Azurinsight extension is now active!');
     vscode.window.showInformationMessage('Azurinsight: Activating...');
+
+    // Check autoStart setting
+    const config = vscode.workspace.getConfiguration('azurinsight');
+    const autoStart = config.get<boolean>('autoStart');
 
     outputChannel = vscode.window.createOutputChannel('Azurinsight');
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
@@ -39,6 +44,10 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(openWebviewCommand);
 
     updateStatusBar();
+
+    if (autoStart) {
+        startServer(context);
+    }
 }
 
 function startServer(context: vscode.ExtensionContext) {
@@ -66,9 +75,12 @@ function startServer(context: vscode.ExtensionContext) {
 
     outputChannel.appendLine(`Starting server from: ${scriptPath}`);
 
+    const config = vscode.workspace.getConfiguration('azurinsight');
+    const port = config.get<number>('port') || 5000;
+
     serverProcess = cp.spawn(command, [scriptPath], {
         cwd: serverPath,
-        env: { ...process.env, PORT: '5000' } // Default port
+        env: { ...process.env, PORT: port.toString() }
     });
 
     serverProcess.on('error', (err) => {
@@ -217,15 +229,20 @@ class AzurinsightPanel {
 
         // Use a nonce to whitelist which scripts can be run
         const nonce = getNonce();
+        const config = vscode.workspace.getConfiguration('azurinsight');
+        const port = config.get<number>('port') || 5000;
 
         return `<!DOCTYPE html>
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} https:; font-src ${webview.cspSource}; script-src 'nonce-${nonce}'; connect-src ws://localhost:5000 http://localhost:5000;">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} https:; font-src ${webview.cspSource}; script-src 'nonce-${nonce}'; connect-src ws://localhost:${port} http://localhost:${port};">
                 <title>Azurinsight</title>
                 <link href="${styleUri}" rel="stylesheet">
+                <script nonce="${nonce}">
+                    window.azurinsightPort = ${port};
+                </script>
             </head>
             <body>
                 <div id="root"></div>
@@ -249,12 +266,7 @@ class AzurinsightPanel {
 }
 
 function getNonce() {
-    let text = '';
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 32; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
+    return crypto.randomBytes(16).toString('hex');
 }
 
 export function deactivate() {

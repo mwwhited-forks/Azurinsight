@@ -9,8 +9,12 @@
     "build": "tsc"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Rahul Thatikonda",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rahulkumar010/azurinsight.git"
+  },
   "dependencies": {
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",

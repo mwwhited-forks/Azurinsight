@@ -43,7 +43,7 @@ You can configure the emulator via VS Code settings:
 
 -   `azurinsight.port`: The port for the ingestion server (default: `5000`).
 -   `azurinsight.dbPath`: Path to the SQLite database file (default: inside the extension folder).
--   `azurinsight.autoStart`: Whether to start the server automatically on VS Code startup (default: `true`).
+-   `azurinsight.autoStart`: Whether to start the server automatically on VS Code startup (default: `false`).
 
 ### Usage with Application Insights SDK
 
