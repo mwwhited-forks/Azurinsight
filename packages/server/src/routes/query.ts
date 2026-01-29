@@ -42,8 +42,10 @@ queryRouter.delete('/telemetry', (req, res) => {
     let params: any[] = [];
 
     if (ids) {
-        const idList = (ids as string).split(',').map(id => `'${id}'`).join(',');
-        sql += ` AND id IN (${idList})`;
+        const idArray = (ids as string).split(',');
+        const placeholders = idArray.map(() => '?').join(',');
+        sql += ` AND id IN (${placeholders})`;
+        params.push(...idArray);
     }
 
     if (start) {
@@ -56,7 +58,8 @@ queryRouter.delete('/telemetry', (req, res) => {
         params.push(end);
     }
 
-    if (params.length === 0 && !ids) {
+    if (params.length === 0 && !ids) { // strictly if NO filters at all, though ids check is redundant with params.length check if we push ids to params.
+        // Actually, if ids is present, params has it. So just check params.length
         res.status(400).json({ error: 'No criteria provided' });
         return;
     }

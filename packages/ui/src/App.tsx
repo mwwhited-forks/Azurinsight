@@ -18,11 +18,11 @@ function App() {
   const normalizeItem = (item: any): TelemetryItem => {
     let data = item.data;
     if (typeof data === 'string') {
-      try { data = JSON.parse(data); } catch (e) { console.error('Error parsing data JSON', e); }
+      try { data = JSON.parse(data); } catch { /* ignore */ }
     }
     let tags = item.tags;
     if (typeof tags === 'string') {
-      try { tags = JSON.parse(tags); } catch (e) { console.error('Error parsing tags JSON', e); }
+      try { tags = JSON.parse(tags); } catch { /* ignore */ }
     }
 
     let itemType = item.itemType;
@@ -75,7 +75,6 @@ function App() {
 
   const handlePurge = () => {
     confirmAction('Are you sure you want to delete all telemetry data from the server? This cannot be undone.', async () => {
-      console.log('Purge confirmed via modal');
       try {
         const response = await fetch('http://localhost:5000/api/purge', { method: 'DELETE' });
         console.log('Purge response status:', response.status);
@@ -94,7 +93,6 @@ function App() {
   const handleDeleteSelected = () => {
     if (selectedIds.size === 0) return;
     confirmAction(`Delete ${selectedIds.size} selected items?`, async () => {
-      console.log('Delete selected confirmed via modal');
       try {
         const ids = Array.from(selectedIds).join(',');
         const response = await fetch(`http://localhost:5000/api/telemetry?ids=${ids}`, { method: 'DELETE' });
@@ -118,7 +116,6 @@ function App() {
       return;
     }
     confirmAction(`Delete items between ${new Date(startDate).toLocaleString()} and ${new Date(endDate).toLocaleString()}?`, async () => {
-      console.log('Delete range confirmed via modal');
       try {
         const response = await fetch(`http://localhost:5000/api/telemetry?start=${new Date(startDate).toISOString()}&end=${new Date(endDate).toISOString()}`, { method: 'DELETE' });
         console.log('Delete range response status:', response.status);
